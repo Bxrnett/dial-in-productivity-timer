@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productivity Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Productivity Timer 🔥</h1>
+        
+        <div class="timer-section">
+            <div class="timer-label">
+                <span class="status-badge" id="statusBadge">Ready to Dial In</span>
+            </div>
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            
+            <div class="session-info">
+                <div>Session: <strong id="sessionCount">1/4</strong></div>
+                <div>Dial In completed: <strong id="pomodoroCount">0</strong></div>
+            </div>
+
+            <div class="current-task" id="currentTaskDisplay">
+                No task selected
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" id="startBtn" onclick="startTimer()">Start</button>
+                <button class="btn-secondary" id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
+                <button class="btn-danger" id="resetBtn" onclick="resetTimer()">Reset</button>
+            </div>
+        </div>
+
+        <div class="task-section">
+            <h2>📝 Task List</h2>
+            
+            <div class="task-input-group">
+                <input 
+                    type="text" 
+                    id="taskInput" 
+                    placeholder="Enter a new task..." 
+                    onkeypress="handleTaskInputKeypress(event)"
+                />
+                <button class="btn-primary" onclick="addTask()">Add Task</button>
+            </div>
+
+            <ul class="task-list" id="taskList">
+                <li class="empty-state">No tasks yet. Add one above!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Time settings
+        let timeLeft = 25 * 60; // 25 minutes in seconds
+        let timerInterval = null;
+        let isRunning = false;
+        let currentSession = 1;
+        let totalPomodoros = 0;
+        let timerMode = 'focus'; // 'focus', 'rest', 'break'
+
+        // Task status
+        let tasks = [];
+        let selectedTaskId = null;
+
+        // Timer functions
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('sessionCount').textContent = `${currentSession}/4`;
+            document.getElementById('pomodoroCount').textContent = totalPomodoros;
+            
+            updateStatusBadge();
+        }
+
+        function updateStatusBadge() {
+            const badge = document.getElementById('statusBadge');
+            if (!isRunning) {
+                badge.textContent = 'Ready to Dial In';
+                badge.className = 'status-badge status-focus';
+                return;
+            }
+
+            if (timerMode === 'focus') {
+                badge.textContent = '🎯 Focus Time';
+                badge.className = 'status-badge status-focus';
+            } else if (timerMode === 'rest') {
+                badge.textContent = '☕ Short Break';
+                badge.className = 'status-badge status-rest';
+            } else if (timerMode === 'break') {
+                badge.textContent = '🌴 Long Break';
+                badge.className = 'status-badge status-break';
+            }
+        }
+
+        function startTimer() {
+            if (!selectedTaskId) {
+                alert('Please select a task before starting the timer!');
+                return;
+            }
+
+            isRunning = true;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                
+                if (timeLeft <= 0) {
+                    handleTimerComplete();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            updateStatusBadge();
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            currentSession = 1;
+            totalPomodoros = 0;
+            timerMode = 'focus';
+            timeLeft = 25 * 60;
+            updateDisplay();
+        }
+
+        function handleTimerComplete() {
+            pauseTimer();
+            playNotificationSound();
+            
+            if (timerMode === 'focus') {
+                totalPomodoros++;
+                
+                if (currentSession === 4) {
+                    // Long break after 4 sessions
+                    alert('🎉 You smashed that! Time for a 15-minute break!');
+                    timerMode = 'break';
+                    timeLeft = 15 * 60;
+                    currentSession = 1;
+                } else {
+                    // Short break
+                    alert('✅ You Dialled in! Take a 5-minute break.');
+                    timerMode = 'rest';
+                    timeLeft = 5 * 60;
+                    currentSession++;
+                }
+            } else {
+                // Break is over, back to focus
+                alert('Break time is over! Ready for the next Dial In session?');
+                timerMode = 'focus';
+                timeLeft = 25 * 60;
+            }
+            
+            updateDisplay();
+        }
+
+        function playNotificationSound() {
+            // Create a simple beep sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // Task functions
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const taskText = input.value.trim();
+            
+            if (!taskText) {
+                alert('Please enter a task!');
+                return;
+            }
+            
+            const task = {
+                id: Date.now(),
+                text: taskText
+            };
+            
+            tasks.push(task);
+            input.value = '';
+            renderTasks();
+        }
+
+        function deleteTask(taskId) {
+            tasks = tasks.filter(t => t.id !== taskId);
+            if (selectedTaskId === taskId) {
+                selectedTaskId = null;
+                updateCurrentTaskDisplay();
+            }
+            renderTasks();
+        }
+
+        function selectTask(taskId) {
+            selectedTaskId = taskId;
+            renderTasks();
+            updateCurrentTaskDisplay();
+        }
+
+        function updateCurrentTaskDisplay() {
+            const display = document.getElementById('currentTaskDisplay');
+            if (selectedTaskId) {
+                const task = tasks.find(t => t.id === selectedTaskId);
+                display.textContent = `Working on: ${task.text}`;
+            } else {
+                display.textContent = 'No task selected';
+            }
+        }
+
+        function renderTasks() {
+            const taskList = document.getElementById('taskList');
+            
+            if (tasks.length === 0) {
+                taskList.innerHTML = '<li class="empty-state">No tasks yet. Add one above!</li>';
+                return;
+            }
+            
+            taskList.innerHTML = tasks.map(task => `
+                <li class="task-item ${selectedTaskId === task.id ? 'selected' : ''}">
+                    <input 
+                        type="radio" 
+                        name="task" 
+                        ${selectedTaskId === task.id ? 'checked' : ''}
+                        onchange="selectTask(${task.id})"
+                    />
+                    <span class="task-text" onclick="selectTask(${task.id})">${task.text}</span>
+                    <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+                </li>
+            `).join('');
+            
+            updateCurrentTaskDisplay();
+        }
+
+        function handleTaskInputKeypress(event) {
+            if (event.key === 'Enter') {
+                addTask();
+            }
+        }
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>
