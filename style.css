@@ -36,7 +36,7 @@ h1 {
 }
 
 .timer-display {
-    font-size: 4em;
+    font-size: 2em;
     font-weight: bold;
     color: #18604d;
     margin: 20px 0;
@@ -224,4 +224,71 @@ input[type="text"]:focus {
 .status-break {
     background: #f39c12;
     color: white;
+}
+
+/* Coffee Cup Styles */
+.coffee-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0 20px 0;
+}
+
+.coffee-cup {
+    position: relative;
+    width: 120px;
+    height: 140px;
+    background: linear-gradient(to right, #fff 0%, #f5f5f5 100%);
+    border: 4px solid #8B4513;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.1),
+                0 5px 15px rgba(0,0,0,0.2);
+}
+
+.coffee-liquid {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #6F4E37 0%, #3E2723 100%);
+    transition: height 1s ease-out;
+    border-radius: 0 0 6px 6px;
+}
+
+.coffee-liquid::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    animation: steam 3s ease-in-out infinite;
+}
+
+.coffee-handle {
+    position: absolute;
+    right: -40px;
+    top: 30px;
+    width: 45px;
+    height: 70px;
+    border: 5px solid #000000;
+    border-left: none;
+    border-radius: 0 50px 50px 0;
+    background: transparent;
+    box-shadow: inset -3px 0 5px rgba(0,0,0,0.2);
+}
+
+@keyframes steam {
+    0%, 100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 0.6;
+        transform: translateY(-2px);
+    }
 }

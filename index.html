@@ -12,13 +12,22 @@
         
         <div class="timer-section">
             <div class="timer-label">
-                <span class="status-badge" id="statusBadge">Ready to Dial In</span>
+                <span class="status-badge" id="statusBadge">Ready to Dial-In</span>
             </div>
+            
+            <!-- Coffee Cup Visualization -->
+            <div class="coffee-container">
+                <div class="coffee-cup">
+                    <div class="coffee-liquid" id="coffeeLiquid"></div>
+                    <div class="coffee-handle"></div>
+                </div>
+            </div>
+            
             <div class="timer-display" id="timerDisplay">25:00</div>
             
             <div class="session-info">
                 <div>Session: <strong id="sessionCount">1/4</strong></div>
-                <div>Dial In completed: <strong id="pomodoroCount">0</strong></div>
+                <div>Session completed: <strong id="pomodoroCount">0</strong></div>
             </div>
 
             <div class="current-task" id="currentTaskDisplay">
@@ -74,13 +83,21 @@
             document.getElementById('sessionCount').textContent = `${currentSession}/4`;
             document.getElementById('pomodoroCount').textContent = totalPomodoros;
             
+            updateCoffeeLiquid();
             updateStatusBadge();
+        }
+        
+        function updateCoffeeLiquid() {
+            const totalTime = timerMode === 'focus' ? 25 * 60 : (timerMode === 'rest' ? 5 * 60 : 15 * 60);
+            const percentage = (timeLeft / totalTime) * 100;
+            const coffeeLiquid = document.getElementById('coffeeLiquid');
+            coffeeLiquid.style.height = percentage + '%';
         }
 
         function updateStatusBadge() {
             const badge = document.getElementById('statusBadge');
             if (!isRunning) {
-                badge.textContent = 'Ready to Dial In';
+                badge.textContent = 'Ready to Dial-In';
                 badge.className = 'status-badge status-focus';
                 return;
             }
@@ -149,14 +166,14 @@
                     currentSession = 1;
                 } else {
                     // Short break
-                    alert('✅ You Dialled in! Take a 5-minute break.');
+                    alert('✅ You smashed that! Take a 5-minute break.');
                     timerMode = 'rest';
                     timeLeft = 5 * 60;
                     currentSession++;
                 }
             } else {
                 // Break is over, back to focus
-                alert('Break time is over! Ready for the next Dial In session?');
+                alert('Break time is over! Ready for the next Dial-In session?');
                 timerMode = 'focus';
                 timeLeft = 25 * 60;
             }
