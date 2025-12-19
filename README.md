@@ -1,23 +1,24 @@
-# 🔥 Dial-In Productivity Timer
+# Dial-In Productivity Timer
 
 A clean, modern Pomodoro timer web application with integrated task management to help you stay focused and productive.
+https://dial-in-timer.wb1.uk/
 
 ## Features
 
-- **⏱️ Pomodoro Timer**
+- **Pomodoro Timer**
   - 25-minute focus sessions
   - 5-minute short breaks
   - 15-minute long break after completing 4 focus sessions
   - Visual status indicators for different timer modes
   - Audio notification when sessions complete
 
-- **📝 Task Management**
+- **Task Management**
   - Add and delete tasks
   - Select the task you're working on before starting the timer
   - Visual indication of the currently selected task
   - Clean, intuitive interface
 
-- **📊 Progress Tracking**
+- **Progress Tracking**
   - Session counter (1-4)
   - Total completed pomodoros counter
   - Current task display during timer
