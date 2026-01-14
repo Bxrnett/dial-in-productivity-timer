@@ -1,0 +1,3 @@
+name = "dial-in-productivity-timer"
+main = "workers-site/index.js"
+compatibility_date = "2026-01-14"
