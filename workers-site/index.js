@@ -81,10 +81,9 @@ const INDEX_HTML = `<!DOCTYPE html>
         function updateDisplay() {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
-            document.getElementById('timerDisplay').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
             
-            document.getElementById('sessionCount').textContent = `${currentSession}/4`;
+            document.getElementById('sessionCount').textContent = currentSession + '/4';
             document.getElementById('pomodoroCount').textContent = totalPomodoros;
             
             updateCoffeeLiquid();
@@ -242,7 +241,7 @@ const INDEX_HTML = `<!DOCTYPE html>
             const display = document.getElementById('currentTaskDisplay');
             if (selectedTaskId) {
                 const task = tasks.find(t => t.id === selectedTaskId);
-                display.textContent = `Working on: ${task.text}`;
+                display.textContent = 'Working on: ' + task.text;
             } else {
                 display.textContent = 'No task selected';
             }
@@ -256,18 +255,13 @@ const INDEX_HTML = `<!DOCTYPE html>
                 return;
             }
             
-            taskList.innerHTML = tasks.map(task => `
-                <li class="task-item ${selectedTaskId === task.id ? 'selected' : ''}">
-                    <input 
-                        type="radio" 
-                        name="task" 
-                        ${selectedTaskId === task.id ? 'checked' : ''}
-                        onchange="selectTask(${task.id})"
-                    />
-                    <span class="task-text" onclick="selectTask(${task.id})">${task.text}</span>
-                    <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
-                </li>
-            `).join('');
+            taskList.innerHTML = tasks.map(function(task) {
+                return '<li class="task-item ' + (selectedTaskId === task.id ? 'selected' : '') + '">' +
+                    '<input type="radio" name="task" ' + (selectedTaskId === task.id ? 'checked' : '') + ' onchange="selectTask(' + task.id + ')" />' +
+                    '<span class="task-text" onclick="selectTask(' + task.id + ')">' + task.text + '</span>' +
+                    '<button class="delete-btn" onclick="deleteTask(' + task.id + ')">Delete</button>' +
+                '</li>';
+            }).join('');
             
             updateCurrentTaskDisplay();
         }
