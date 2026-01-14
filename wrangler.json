@@ -1,0 +1,8 @@
+{
+  "name": "dial-in-productivity-timer",
+  "account_id": "REPLACE_WITH_YOUR_ACCOUNT_ID",
+  "compatibility_date": "2026-01-14",
+  "site": {
+    "bucket": "./"
+  }
+}
